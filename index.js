@@ -133,13 +133,14 @@ async function getSafariBasedRecords(paths, browserName, historyTime)
     {
         console.log(1);
         let path = paths[i];
-        //await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
+        let newPath = path + "i";
+        await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
         let url = `select DISTINCT url,visit_time FROM history_visits INNER JOIN history_items ON history_items.id  = history_visits.history_item WHERE visit_time > ${historyTime[0]} ORDER BY visit_time ASC`;
-        browser = await getBrowserhistory(path,url,"params");
+        browser = await getBrowserhistory(newPath,url,"params");
         broswerHistory.push(...browser)
-        // fs.unlink(newPath,(err) => {
-        //     console.log(err);
-        // });
+        fs.unlink(newPath,(err) => {
+            console.log(err);
+        });
     }
     broswerHistory.forEach((row) => {
         if(!row.visit_duration) row.visit_duration = 0;

@@ -98,8 +98,7 @@ function findFilesInDir(startPath, filter,regExp = new RegExp(".*"), depth = 0) 
     for (let i = 0; i < files.length; i++) {
         let filename = path.join(startPath, files[i]);
         if (!fs.existsSync(filename)) {
-            // console.log('file doesn\'t exist ', startPath);
-            return results;
+            continue;
         }
         let stat = fs.lstatSync(filename);
         if (stat.isDirectory()) {
@@ -117,9 +116,9 @@ function findPaths(path, browserName)
     switch (browserName)
     {
         case FIREFOX:
-            return findFilesInDir(path, ".sqlite",/places\.sqlite$/);
+            return findFilesInDir(path, ".sqlite",/places.sqlite$/);
         case SEAMONKEY:
-            return findFilesInDir(path, ".sqlite",/places\.sqlite$/);
+            return findFilesInDir(path, ".sqlite",/places.sqlite$/);
         case CHROME:
             return findFilesInDir(path,"History",/History$/)
         case TORCH: 
