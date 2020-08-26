@@ -34,6 +34,7 @@ exports.copyFile = function(path,newPath)
         })
     })
 }
+
 exports.close = function()
 {
     return new Promise((resolve,reject)  => {

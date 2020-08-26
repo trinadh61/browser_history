@@ -89,19 +89,22 @@ async function getFirefoxBasedRecords(paths, browserName, historyTime)
 {
     let broswerHistory = [];
     let browser;
-    
+    let newPath;
     console.log(moment(historyTime[0]/1000).format("MMMM Do YYYY, h:mm:ss a"))
     for(let i=0;i<paths.length;i++)
     {
         console.log(1);
         let path = paths[i];
-        //await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
+        newPath = path+i;
+        await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
         let url = `select DISTINCT url,last_visit_date as visit_time,rev_host from moz_places WHERE visit_time > ${historyTime[0]} ORDER BY visit_time ASC`;
-        browser = await getBrowserhistory(path,url,"params");
+        let path1 = ((process.platform === 'linux')?newPath:path)
+        console.log(path1)
+        browser = await getBrowserhistory(path1,url,"params");
+        fs.unlink(newPath,(err) => {
+            //console.log(err);
+        });
         broswerHistory.push(...browser)
-        // fs.unlink(newPath,(err) => {
-        //     console.log(err);
-        // });
     }
     broswerHistory.forEach((row) => {
         if(!row.visit_duration) row.visit_duration = 0;
@@ -133,14 +136,13 @@ async function getSafariBasedRecords(paths, browserName, historyTime)
     {
         console.log(1);
         let path = paths[i];
-        let newPath = path + "i";
-        await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
+        //await promises.copyFile(path,newPath).then(() => console.log("copied")).catch((err) => console.log(err))
         let url = `select DISTINCT url,visit_time FROM history_visits INNER JOIN history_items ON history_items.id  = history_visits.history_item WHERE visit_time > ${historyTime[0]} ORDER BY visit_time ASC`;
-        browser = await getBrowserhistory(newPath,url,"params");
+        browser = await getBrowserhistory(path,url,"params");
         broswerHistory.push(...browser)
-        fs.unlink(newPath,(err) => {
-            console.log(err);
-        });
+        // fs.unlink(newPath,(err) => {
+        //     console.log(err);
+        // });
     }
     broswerHistory.forEach((row) => {
         if(!row.visit_duration) row.visit_duration = 0;
@@ -276,7 +278,6 @@ async function getAllHistory(historyTimeLength = 10) {
     browsers.browserDbLocations.torch = browsers.findPaths(browsers.defaultPaths.torch, browsers.TORCH);
     browsers.browserDbLocations.brave = browsers.findPaths(browsers.defaultPaths.brave, browsers.BRAVE);
     browsers.browserDbLocations.safari = browsers.findPaths(browsers.defaultPaths.safari, browsers.SAFARI);
-    browsers.browserDbLocations.seamonkey = browsers.findPaths(browsers.defaultPaths.seamonkey, browsers.SEAMONKEY);
     browsers.browserDbLocations.maxthon = browsers.findPaths(browsers.defaultPaths.maxthon, browsers.MAXTHON);
     browsers.browserDbLocations.vivaldi = browsers.findPaths(browsers.defaultPaths.vivaldi, browsers.VIVALDI);
     browsers.browserDbLocations.edge = browsers.findPaths(browsers.defaultPaths.edge, browsers.EDGE);
@@ -295,6 +296,6 @@ async function getAllHistory(historyTimeLength = 10) {
 
     return allBrowserRecords;
 }
-getAllHistory(11).then((result) => { console.log(result)})
+getAllHistory(110).then((result) => { console.log(result)})
 
 //console.log(moment().subtract(10,'minutes').calendar().format("MMMM Do YYYY, h:mm:ss a"));

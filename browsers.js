@@ -104,7 +104,7 @@ function findFilesInDir(startPath, filter,regExp = new RegExp(".*"), depth = 0) 
         if (stat.isDirectory()) {
             results = results.concat(findFilesInDir(filename, filter, regExp, depth + 1)); //recurse
         } else if (regExp.test(filename)) {
-            console.log('-- found: ', filename);
+            //console.log('-- found: ', filename);
             results.push(filename);
         }
     }
